@@ -1,5 +1,4 @@
 const { sql, poolPromise } = require("../config/db");
-const { registrarBitacora } = require("../services/bitacoraService");
 
 class PagoService {
     static async crearPago(numFactura, cedula, periodo) {
@@ -42,10 +41,6 @@ class PagoService {
 
             const pago = result.recordset[0];
 
-            // 🔹 Registrar en la bitácora
-            await registrarBitacora("CREAR_PAGO", pago);
-
-            return pago;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -73,10 +68,6 @@ class PagoService {
 
             const pagoAnulado = result.recordset[0];
 
-            // 🔹 Registrar en la bitácora
-            await registrarBitacora("REVERSAR_PAGO", pagoAnulado);
-
-            return pagoAnulado;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -95,12 +86,6 @@ class PagoService {
                 throw new Error("Pago no encontrado.");
             }
 
-            // 🔹 Registrar en la bitácora
-            await registrarBitacora("OBTENER_PAGO", {
-                pagoId: id,
-                fecha: new Date().toISOString()
-            });
-
             return result.recordset[0];
         } catch (error) {
             throw new Error(error.message);
@@ -115,14 +100,7 @@ class PagoService {
                 .request()
                 .input("periodo", sql.VarChar, periodo)
                 .query("SELECT * FROM Pagos WHERE periodo = @periodo");
-
-            // 🔹 Registrar en la bitácora
-            await registrarBitacora("OBTENER_PAGOS_POR_PERIODO", {
-                periodo,
-                cantidad: result.recordset.length,
-                fecha: new Date().toISOString()
-            });
-
+                
             return result.recordset;
         } catch (error) {
             throw new Error(error.message);
