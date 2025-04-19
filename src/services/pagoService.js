@@ -40,6 +40,8 @@ class PagoService {
                 `);
 
             const pago = result.recordset[0];
+            
+            return pago;
 
         } catch (error) {
             throw new Error(error.message);
@@ -67,6 +69,8 @@ class PagoService {
                 .query("UPDATE Pagos SET estado = 'anulado' OUTPUT INSERTED.* WHERE id = @id");
 
             const pagoAnulado = result.recordset[0];
+
+            return pagoAnulado;
 
         } catch (error) {
             throw new Error(error.message);
